@@ -23,8 +23,8 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -42,33 +42,36 @@ func (rect Rectangle) Perimeter() int {
 	return 2 * (rect.length + rect.width)
 }
 
-func ReadIntFromTerminal(message string) int {
+func ReadIntFromTerminal(message string) (int, error) {
 	fmt.Print(message)
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	if err != nil {
-		panic("Error while reading input")
+		return 0, errors.New("Error while reading input")
 	}
 
 	// Convert the input to int
 	input = strings.Trim(input, "\n")
 	optionNumber, err := strconv.Atoi(input)
 	if err != nil {
-		panic("Please enter a valid integer")
+		return 0, errors.New("Please enter a valid integer")
 	}
 
-	return optionNumber
+	return optionNumber, nil
 }
 
 func main() {
-	defer func() {
-		if err := recover(); err != nil {
-			log.Println(err)
-		}
-	}()
+	length, err := ReadIntFromTerminal("Enter rectangle length: ")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	length := ReadIntFromTerminal("Enter rectangle length: ")
-	width := ReadIntFromTerminal("Enter rectangle width: ")
+	width, err := ReadIntFromTerminal("Enter rectangle width: ")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	var rect = Rectangle{length, width}
 	if rect.length < 0 || rect.width < 0 {

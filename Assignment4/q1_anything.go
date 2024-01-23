@@ -26,8 +26,8 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -52,32 +52,30 @@ func AcceptAnything(value any) {
 	}
 }
 
-func ReadIntFromTerminal(message string) int {
+func ReadIntFromTerminal(message string) (int, error) {
 	fmt.Print(message)
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	if err != nil {
-		panic("Error while reading input")
+		return 0, errors.New("Error while reading input")
 	}
 
 	// Convert the input to int
 	input = strings.Trim(input, "\n")
 	optionNumber, err := strconv.Atoi(input)
 	if err != nil {
-		panic("Please enter a valid integer")
+		return 0, errors.New("Please enter a valid integer")
 	}
 
-	return optionNumber
+	return optionNumber, nil
 }
 
 func main() {
-	defer func() {
-		if err := recover(); err != nil {
-			log.Println(err)
-		}
-	}()
-
-	optionNumber := ReadIntFromTerminal("Enter a choice: ")
+	optionNumber, err := ReadIntFromTerminal("Enter an index: ")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	// ! We have informed to use hard coded value here
 	switch optionNumber {

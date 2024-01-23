@@ -33,8 +33,8 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -74,40 +74,54 @@ func Print(quad Quadrilateral) {
 	fmt.Println("Perimeter :", quad.Perimeter())
 }
 
-func ReadIntFromTerminal(message string) int {
+func ReadIntFromTerminal(message string) (int, error) {
 	fmt.Print(message)
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	if err != nil {
-		panic("Error while reading input")
+		return 0, errors.New("Error while reading input")
 	}
 
 	// Convert the input to int
 	input = strings.Trim(input, "\n")
 	optionNumber, err := strconv.Atoi(input)
 	if err != nil {
-		panic("Please enter a valid integer")
+		return 0, errors.New("Please enter a valid integer")
 	}
 
-	return optionNumber
+	return optionNumber, nil
 }
 
 func main() {
-	defer func() {
-		if err := recover(); err != nil {
-			log.Println(err)
-		}
-	}()
+	optionNumber, err := ReadIntFromTerminal("Enter an Option 1/2: ")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	optionNumber := ReadIntFromTerminal("Enter an Option 1/2: ")
 	switch optionNumber {
 	case 1:
-		length := ReadIntFromTerminal("Enter rectangle length: ")
-		width := ReadIntFromTerminal("Enter rectangle width: ")
+		length, err := ReadIntFromTerminal("Enter rectangle length: ")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		width, err := ReadIntFromTerminal("Enter rectangle width: ")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
 		rect := Rectangle{length, width}
 		Print(rect)
 	case 2:
-		side := ReadIntFromTerminal("Enter square side: ")
+		side, err := ReadIntFromTerminal("Enter square side: ")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
 		square := Square{side}
 		Print(square)
 	default:
