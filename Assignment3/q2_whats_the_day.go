@@ -21,8 +21,12 @@
 package main
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
-	"log"
+	"os"
+	"strconv"
+	"strings"
 )
 
 // Returns Weekday for a given integer if present in map else "Not a Day"
@@ -45,12 +49,29 @@ func getDayFromInteger(index int) string {
 	return weekDay
 }
 
-func main() {
-	var index int
-	fmt.Print("Enter an integer: ")
-	_, err := fmt.Scanln(&index)
+func ReadIntFromTerminal(message string) (int, error) {
+	fmt.Print(message)
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
 	if err != nil {
-		log.Fatalln("Error: ", err)
+		return 0, errors.New("Error while reading input")
+	}
+
+	// Convert the input to int
+	input = strings.Trim(input, "\n")
+	optionNumber, err := strconv.Atoi(input)
+	if err != nil {
+		return 0, errors.New("Please enter a valid integer")
+	}
+
+	return optionNumber, nil
+}
+
+func main() {
+	index, err := ReadIntFromTerminal("Enter an integer: ")
+	if err != nil {
+		fmt.Println("Error: ", err)
+		return
 	}
 
 	fmt.Println(getDayFromInteger(index))

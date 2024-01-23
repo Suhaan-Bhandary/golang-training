@@ -25,8 +25,13 @@ Output: Incorrect Indexes
 package main
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
 	"log"
+	"os"
+	"strconv"
+	"strings"
 )
 
 func sliceArrayOnIndex(index1 int, index2 int) ([]string, []string, []string) {
@@ -45,14 +50,46 @@ func sliceArrayOnIndex(index1 int, index2 int) ([]string, []string, []string) {
 	return slice1, slice2, slice3
 }
 
-func main() {
-	var index1, index2 int
-	fmt.Print("Enter two space separated index: ")
-	_, err := fmt.Scanln(&index1, &index2)
+func ReadMultiIntFromTerminal(message string, outputCount int) ([]int, error) {
+	fmt.Print(message)
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
 	if err != nil {
-		log.Fatalln("Error: ", err)
+		return []int{}, errors.New("Error while reading input")
 	}
 
+	// Removing the last \n from the buffer
+	input = strings.Trim(input, "\n")
+
+	// convert the input to tokens and then read one by one
+	tokens := strings.Fields(input)
+
+	numbers := []int{}
+	for _, token := range tokens {
+		number, err := strconv.Atoi(token)
+		if err != nil {
+			return []int{}, errors.New("Please enter a valid integer")
+		}
+
+		numbers = append(numbers, number)
+	}
+
+	// Check if the numbers and count is equal
+	if len(numbers) != outputCount {
+		return []int{}, errors.New(fmt.Sprintf("Please only enter %d numbers as input", outputCount))
+	}
+
+	return numbers, nil
+}
+
+func main() {
+	indexes, err := ReadMultiIntFromTerminal("Enter an integer: ", 2)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	index1, index2 := indexes[0], indexes[1]
 	slice1, slice2, slice3 := sliceArrayOnIndex(index1, index2)
 
 	// Printing slices on newlines
