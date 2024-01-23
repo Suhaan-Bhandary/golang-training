@@ -63,7 +63,6 @@ func ReadIntFromTerminal(message string) (int, error) {
 func main() {
 	slice := []int{1, 2, 3, 4, 5}
 	index, err := ReadIntFromTerminal("Enter an index: ")
-
 	if err != nil {
 		fmt.Println(err)
 		return
